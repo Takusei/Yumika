@@ -115,7 +115,7 @@ export default class TutorialsList extends Component {
           </div>
         </div>
         <div className="col-md-6">
-          <h4>Tutorials List</h4>
+          <h4>Inventory List</h4>
 
           <ul className="list-group">
             {tutorials &&
@@ -128,7 +128,7 @@ export default class TutorialsList extends Component {
                   onClick={() => this.setActiveTutorial(tutorial, index)}
                   key={index}
                 >
-                  {tutorial.title}
+                  {tutorial.id + " " + tutorial.name + " " +tutorial.type }
                 </li>
               ))}
           </ul>
@@ -143,12 +143,24 @@ export default class TutorialsList extends Component {
         <div className="col-md-6">
           {currentTutorial ? (
             <div>
-              <h4>Tutorial</h4>
+              <h4>Inventory</h4>
               <div>
                 <label>
-                  <strong>Title:</strong>
+                  <strong>Id:</strong>
                 </label>{" "}
-                {currentTutorial.title}
+                {currentTutorial.id}
+              </div>
+              <div>
+                <label>
+                  <strong>Name:</strong>
+                </label>{" "}
+                {currentTutorial.name}
+              </div>
+              <div>
+                <label>
+                  <strong>Type:</strong>
+                </label>{" "}
+                {currentTutorial.type}
               </div>
               <div>
                 <label>
@@ -158,13 +170,25 @@ export default class TutorialsList extends Component {
               </div>
               <div>
                 <label>
+                  <strong>Available From:</strong>
+                </label>{" "}
+                {currentTutorial.dtAvailableFrom}
+              </div>
+              <div>
+                <label>
+                  <strong>Available To:</strong>
+                </label>{" "}
+                {currentTutorial.dtAvailableTo}
+              </div>
+              <div>
+                <label>
                   <strong>Status:</strong>
                 </label>{" "}
-                {currentTutorial.published ? "Published" : "Pending"}
+                {currentTutorial.status}
               </div>
 
               <Link
-                to={"/tutorials/" + currentTutorial.id}
+                to={"/inventories/" + currentTutorial.id}
                 className="badge badge-warning"
               >
                 Edit
@@ -173,7 +197,7 @@ export default class TutorialsList extends Component {
           ) : (
             <div>
               <br />
-              <p>Please click on a Tutorial...</p>
+              <p>Please click on an Inventory...</p>
             </div>
           )}
         </div>

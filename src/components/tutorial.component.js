@@ -14,7 +14,7 @@ export default class Tutorial extends Component {
     this.state = {
       currentTutorial: {
         id: null,
-        title: "",
+        name: "",
         description: "",
         published: false
       },
@@ -27,13 +27,13 @@ export default class Tutorial extends Component {
   }
 
   onChangeTitle(e) {
-    const title = e.target.value;
+    const name = e.target.value;
 
     this.setState(function(prevState) {
       return {
         currentTutorial: {
           ...prevState.currentTutorial,
-          title: title
+          name: name
         }
       };
     });
@@ -66,7 +66,7 @@ export default class Tutorial extends Component {
   updatePublished(status) {
     var data = {
       id: this.state.currentTutorial.id,
-      title: this.state.currentTutorial.title,
+      name: this.state.currentTutorial.name,
       description: this.state.currentTutorial.description,
       published: status
     };
@@ -127,8 +127,8 @@ export default class Tutorial extends Component {
                 <input
                   type="text"
                   className="form-control"
-                  id="title"
-                  value={currentTutorial.title}
+                  id="name"
+                  value={currentTutorial.name}
                   onChange={this.onChangeTitle}
                 />
               </div>
