@@ -1,44 +1,75 @@
-import React, { Component } from "react";
+import React, {Component, forwardRef} from "react";
 import TutorialDataService from "../services/tutorial.service";
 import { Link } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import format from "date-fns/format";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default class TutorialsList extends Component {
   constructor(props) {
     super(props);
-    this.onChangeSearchTitle = this.onChangeSearchTitle.bind(this);
-    this.retrieveTutorials = this.retrieveTutorials.bind(this);
+    this.onChangeSearchName = this.onChangeSearchName.bind(this);
+    this.retrieveInventories = this.retrieveInventories.bind(this);
     this.refreshList = this.refreshList.bind(this);
-    this.setActiveTutorial = this.setActiveTutorial.bind(this);
-    this.removeAllTutorials = this.removeAllTutorials.bind(this);
-    this.searchTitle = this.searchTitle.bind(this);
+    this.setActiveInventory = this.setActiveInventory.bind(this);
+    this.removeAllInventories = this.removeAllInventories.bind(this);
+    this.searchBoth = this.searchBoth.bind(this);
+    this.handleChangeFromTo = this.handleChangeFromTo.bind(this);
+
 
     this.state = {
-      tutorials: [],
-      currentTutorial: null,
+      inventories: [],
+      currentInventory: null,
       currentIndex: -1,
-      searchTitle: ""
+      searchName: "",
+      searchFrom: "",
+      searchTo: ""
     };
   }
 
   componentDidMount() {
-    this.retrieveTutorials();
+    this.retrieveInventories();
   }
 
-  onChangeSearchTitle(e) {
-    const searchTitle = e.target.value;
+  onChangeSearchName(e) {
+    const searchName = e.target.value;
 
     this.setState({
-      searchTitle: searchTitle
+      searchName: searchName
     });
   }
 
-  retrieveTutorials() {
+  handleChangeFromTo(dates) {
+    const [from, to] = dates;
+    this.setDateFrom(from);
+    this.setDateTo(to);
+  }
+
+  setDateFrom(date){
+    const formatDate = date == null? "": format(date, "yyyy-MM-dd", {
+      awareOfUnicodeTokens: true })
+    console.log("search from",  formatDate);
+    this.setState({
+      searchFrom:formatDate
+    });
+  }
+
+  setDateTo(date) {
+    const formatDate = date == null? "" : format(date, "yyyy-MM-dd", {
+      awareOfUnicodeTokens: true })
+    console.log("search to",  formatDate);
+    this.setState({
+      searchTo:formatDate
+    });
+  }
+
+  retrieveInventories() {
     TutorialDataService.getAll()
       .then(response => {
         this.setState({
-          tutorials: response.data
+          inventories: response.data
         });
-        console.log(response.data);
+        console.log("retrieve inventory", response.data);
       })
       .catch(e => {
         console.log(e);
@@ -46,21 +77,22 @@ export default class TutorialsList extends Component {
   }
 
   refreshList() {
-    this.retrieveTutorials();
+    console.log("refresh list");
+    this.retrieveInventories();
     this.setState({
-      currentTutorial: null,
+      currentInventory: null,
       currentIndex: -1
     });
   }
 
-  setActiveTutorial(tutorial, index) {
+  setActiveInventory(inventory, index) {
     this.setState({
-      currentTutorial: tutorial,
+      currentInventory: inventory,
       currentIndex: index
     });
   }
 
-  removeAllTutorials() {
+  removeAllInventories() {
     TutorialDataService.deleteAll()
       .then(response => {
         console.log(response.data);
@@ -71,26 +103,52 @@ export default class TutorialsList extends Component {
       });
   }
 
-  searchTitle() {
+  searchName(name) {
+    // this.retrieveInventories();
     this.setState({
-      currentTutorial: null,
+      currentInventory: null,
+      currentIndex: -1
+    });
+    let inventories = this.state.inventories;
+
+    console.log("Flitter", name, inventories.filter(inventories => inventories.name == name));
+    return inventories.filter(inventories => inventories.name == name);
+  }
+
+
+  searchBoth() {
+    this.setState({
+      currentInventory: null,
       currentIndex: -1
     });
 
-    TutorialDataService.findByTitle(this.state.searchTitle)
-      .then(response => {
-        this.setState({
-          tutorials: response.data
-        });
-        console.log(response.data);
+    if(this.state.searchName !== ""){
+      console.log("search by name")
+      this.setState({
+        inventories: this.searchName(this.state.searchName)
       })
-      .catch(e => {
-        console.log(e);
-      });
+    }
+
+    if(this.state.searchFrom !== "" && this.state.searchTo !== ""){
+      console.log("search by date")
+      TutorialDataService.findByDate(this.state.searchFrom, this.state.searchTo)
+          .then(response => {
+            this.setState({
+              inventories: response.data
+            });
+            console.log(response.data);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+    }
+    if(this.state.searchFrom === "" && this.state.searchTo === "" && this.state.searchName === "") {
+      this.retrieveInventories();
+    }
   }
 
   render() {
-    const { searchTitle, tutorials, currentTutorial, currentIndex } = this.state;
+    const { searchName, searchFrom, searchTo, inventories, currentInventory, currentIndex } = this.state;
 
     return (
       <div className="list row">
@@ -99,96 +157,115 @@ export default class TutorialsList extends Component {
             <input
               type="text"
               className="form-control"
-              placeholder="Search by title"
-              value={searchTitle}
-              onChange={this.onChangeSearchTitle}
+              placeholder="Search by name"
+              value={searchName}
+              onChange={this.onChangeSearchName}
+            />
+            <DatePicker
+                className="form-control"
+                selected={Date.parse(searchFrom)}
+                onChange={this.handleChangeFromTo}
+                selectsRange
+                placeholderText="Search by Available"
+                startDate={Date.parse(searchFrom)}
+                endDate={Date.parse(searchTo)}
+                minDate={new Date()}
+                dateFormat="yyyy-MM-dd"
+                showClearButton={true}
             />
             <div className="input-group-append">
               <button
                 className="btn btn-outline-secondary"
                 type="button"
-                onClick={this.searchTitle}
+                onClick={this.searchBoth}
               >
                 Search
               </button>
             </div>
           </div>
+          {searchFrom && searchTo && (
+              <div className="summary">
+                <p>
+                  You search an inventory from {searchFrom} to{" "}
+                  {searchTo}.
+                </p>
+              </div>
+          )}
         </div>
+
         <div className="col-md-6">
           <h4>Inventory List</h4>
-
           <ul className="list-group">
-            {tutorials &&
-              tutorials.map((tutorial, index) => (
+            {inventories &&
+            inventories.map((inventory, index) => (
                 <li
                   className={
                     "list-group-item " +
                     (index === currentIndex ? "active" : "")
                   }
-                  onClick={() => this.setActiveTutorial(tutorial, index)}
+                  onClick={() => this.setActiveInventory(inventory, index)}
                   key={index}
                 >
-                  {tutorial.id + " " + tutorial.name + " " +tutorial.type }
+                  {inventory.id + " " + inventory.name + " " +inventory.type }
                 </li>
               ))}
           </ul>
-
           <button
             className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllTutorials}
+            onClick={this.removeAllInventories}
           >
             Remove All
           </button>
         </div>
         <div className="col-md-6">
-          {currentTutorial ? (
+          {currentInventory ? (
             <div>
               <h4>Inventory</h4>
               <div>
                 <label>
                   <strong>Id:</strong>
                 </label>{" "}
-                {currentTutorial.id}
+                {currentInventory.id}
               </div>
               <div>
                 <label>
                   <strong>Name:</strong>
                 </label>{" "}
-                {currentTutorial.name}
+                {currentInventory.name}
               </div>
               <div>
                 <label>
                   <strong>Type:</strong>
                 </label>{" "}
-                {currentTutorial.type}
+                {currentInventory.type}
               </div>
               <div>
                 <label>
                   <strong>Description:</strong>
                 </label>{" "}
-                {currentTutorial.description}
+                {currentInventory.description}
               </div>
               <div>
                 <label>
                   <strong>Available From:</strong>
                 </label>{" "}
-                {currentTutorial.dtAvailableFrom}
+                {currentInventory.dtAvailableFrom}
               </div>
               <div>
                 <label>
                   <strong>Available To:</strong>
                 </label>{" "}
-                {currentTutorial.dtAvailableTo}
+                {currentInventory.dtAvailableTo}
               </div>
               <div>
                 <label>
                   <strong>Status:</strong>
                 </label>{" "}
-                {currentTutorial.status}
+                {currentInventory.status}
               </div>
 
               <Link
-                to={"/inventories/" + currentTutorial.id}
+                to={"/inventories/" + currentInventory.id}
                 className="badge badge-warning"
               >
                 Edit

@@ -25,8 +25,12 @@ class TutorialDataService {
     return http.delete(`/inventories`);
   }
 
-  findByTitle(title) {
+  findByName(title) {
     return http.get(`/inventories?title=${title}`);
+  }
+
+  findByDate(searchFrom, searchTo) {
+    return http.get(`/inventories/availabilitySearch?from=${searchFrom}&to=${searchTo}`);
   }
 }
 
