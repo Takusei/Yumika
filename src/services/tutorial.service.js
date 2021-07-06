@@ -14,7 +14,14 @@ class TutorialDataService {
   }
 
   create(data) {
-    return http.post("/inventories", data);
+    console.log(data);
+    // const {name, type, description, availableFrom, availableTo, availableTo} = ...data;
+    const name = data.name;
+    const type = data.type;
+    const description = data.description;
+    const availableFrom = data.availableFrom;
+    const availableTo = data.availableTo;
+    return http.post(`/inventories?name=${name}&type=${type}&description=${description}&availableFrom=${availableFrom}&availableTo=${availableTo}`);
   }
 
   update(id, data) {
