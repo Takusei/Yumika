@@ -19,6 +19,7 @@ export default class TutorialsList extends Component {
 
     this.state = {
       inventories: [],
+      reservations:[],
       currentInventory: null,
       currentIndex: -1,
       searchName: "",
@@ -88,8 +89,25 @@ export default class TutorialsList extends Component {
   setActiveInventory(inventory, index) {
     this.setState({
       currentInventory: inventory,
-      currentIndex: index
+      currentIndex: index,
+
     });
+    this.setActiveReservation(inventory);
+  }
+
+  setActiveReservation(inventory) {
+    TutorialDataService.getAllReservation()
+        .then(response => {
+          let reservations = response.data;
+          reservations = reservations.filter(reservations => reservations.inventoryId === inventory.id);
+          this.setState({
+            reservations: reservations
+          });
+          console.log("retrieve reservations", reservations);
+        })
+        .catch(e => {
+          console.log(e);
+        });
   }
 
   removeAllInventories() {
@@ -163,16 +181,16 @@ export default class TutorialsList extends Component {
   }
 
   render() {
-    const { searchName, searchFrom, searchTo, inventories, currentInventory, currentIndex } = this.state;
+    const { searchName, searchFrom, searchTo, inventories, reservations, currentInventory, currentIndex } = this.state;
 
     return (
       <div className="list row">
-        <div className="col-md-8">
+        <div className="col-md-12">
           <div className="input-group mb-3">
             <input
               type="text"
               className="form-control"
-              placeholder="Search by name"
+              placeholder="Search by Name"
               value={searchName}
               onChange={this.onChangeSearchName}
             />
@@ -208,34 +226,44 @@ export default class TutorialsList extends Component {
           )}
         </div>
 
-        <div className="col-md-6">
+        <div className="col-md-12">
           <h4>Inventory List</h4>
-          <ul className="list-group">
-            {inventories &&
-            inventories.map((inventory, index) => (
-                <li
-                  className={
-                    "list-group-item " +
-                    (index === currentIndex ? "active" : "")
-                  }
-                  onClick={() => this.setActiveInventory(inventory, index)}
-                  key={index}
-                >
-                  {inventory.id + " " + inventory.name + " " +inventory.type }
-                </li>
-              ))}
-          </ul>
-          <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllInventories}
-          >
-            Remove All
-          </button>
+          <table className="table table-fixed">
+            <thead>
+            <tr>
+              <th scope="col" className="col-md-4">Inventory Id</th>
+              <th scope="col" className="col-md-4">Supplier Name</th>
+              <th scope="col" className="col-md-4">Room Type</th>
+            </tr>
+            </thead>
+            <tbody className="col-12">
+              <ul className="list-group col-12">
+                {inventories &&
+                inventories.map((inventory, index) => (
+                    <li
+                      className={
+                        "list-group-item " +
+                        (index === currentIndex ? "active" : "")
+                      }
+                      onClick={() => this.setActiveInventory(inventory, index)}
+                      key={index}
+                    >
+                      <tr>
+                        <td className="col-4">{inventory.id}</td>
+                        <td className="col-4">{inventory.name}</td>
+                        <td className="col-4">{inventory.type}</td>
+                      </tr>
+                    </li>
+                  ))}
+              </ul>
+            </tbody>
+          </table>
         </div>
+
         <div className="col-md-6">
           {currentInventory ? (
             <div>
-              <h4>Inventory</h4>
+              <h4>Inventory Details</h4>
               <div>
                 <label>
                   <strong>Id:</strong>
@@ -292,6 +320,42 @@ export default class TutorialsList extends Component {
               <p>Please click on an Inventory...</p>
             </div>
           )}
+        </div>
+
+        <div className="col-md-6">
+          <h4>Reservation List</h4>
+          <table className="table table-fixed">
+            <thead>
+            <tr>
+              <th scope="col" className="col-md-3">Guests</th>
+              <th scope="col" className="col-md-3">CheckIn</th>
+              <th scope="col" className="col-md-3">CheckOut</th>
+            </tr>
+            </thead>
+            <tbody className="col-12">
+              <ul className="list-group">
+                {reservations &&
+                reservations.map((reservations, index) => (
+                    <li
+                        className={"list-group-item"}
+                        key={index}
+                    >
+                      <tr>
+                        <td className="col-4">{reservations.guests}</td>
+                        <td className="col-4">{reservations.dtCheckIn}</td>
+                        <td className="col-4">{reservations.dtCheckOut}</td>
+                      </tr>
+                      <Link
+                          to={"/reservations/" + reservations.id}
+                          className="badge badge-warning"
+                      >
+                        Edit
+                      </Link>
+                    </li>
+                ))}
+              </ul>
+            </tbody>
+          </table>
         </div>
       </div>
     );
