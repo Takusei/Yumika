@@ -1,4 +1,4 @@
-import React, {Component, forwardRef} from "react";
+import React, {Component} from "react";
 import TutorialDataService from "../services/tutorial.service";
 import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -104,15 +104,22 @@ export default class TutorialsList extends Component {
   }
 
   searchName(name) {
-    // this.retrieveInventories();
     this.setState({
       currentInventory: null,
       currentIndex: -1
     });
-    let inventories = this.state.inventories;
 
-    console.log("Flitter", name, inventories.filter(inventories => inventories.name == name));
-    return inventories.filter(inventories => inventories.name == name);
+    TutorialDataService.getAll()
+        .then(response => {
+          let inventories = response.data;
+          inventories = inventories.filter(inventories => inventories.name === name);
+          this.setState({
+            inventories: inventories
+          });
+        })
+        .catch(e => {
+          console.log(e);
+        });
   }
 
 
@@ -122,26 +129,34 @@ export default class TutorialsList extends Component {
       currentIndex: -1
     });
 
-    if(this.state.searchName !== ""){
-      console.log("search by name")
-      this.setState({
-        inventories: this.searchName(this.state.searchName)
-      })
-    }
-
     if(this.state.searchFrom !== "" && this.state.searchTo !== ""){
       console.log("search by date")
+
       TutorialDataService.findByDate(this.state.searchFrom, this.state.searchTo)
           .then(response => {
-            this.setState({
-              inventories: response.data
-            });
+            if (this.state.searchName === ""){
+              this.setState({
+                inventories: response.data
+              });
+            }else{
+              let inventories = response.data;
+              inventories = inventories.filter(inventories => inventories.name === this.state.searchName)
+              this.setState({
+                inventories: inventories
+              })
+            }
             console.log(response.data);
           })
           .catch(e => {
             console.log(e);
           });
     }
+
+    if(this.state.searchFrom === "" && this.state.searchName !== ""){
+      console.log("search by name")
+      this.searchName(this.state.searchName)
+    }
+
     if(this.state.searchFrom === "" && this.state.searchTo === "" && this.state.searchName === "") {
       this.retrieveInventories();
     }
