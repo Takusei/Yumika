@@ -5,6 +5,10 @@ class TutorialDataService {
     return http.get("/inventories");
   }
 
+  getAllReservation() {
+    return http.get("/reservations");
+  }
+
   get(id) {
     return http.get(`/inventories/${id}`);
   }
@@ -32,6 +36,7 @@ class TutorialDataService {
   findByDate(searchFrom, searchTo) {
     return http.get(`/inventories/availabilitySearch?from=${searchFrom}&to=${searchTo}`);
   }
+
 }
 
 export default new TutorialDataService();
