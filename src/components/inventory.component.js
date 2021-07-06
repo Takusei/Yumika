@@ -1,21 +1,26 @@
 import React, { Component } from "react";
 import TutorialDataService from "../services/tutorial.service";
 
-export default class Tutorial extends Component {
+export default class Inventory extends Component {
   constructor(props) {
     super(props);
-    this.onChangeTitle = this.onChangeTitle.bind(this);
+    this.onChangeName = this.onChangeName.bind(this);
+    this.onChangeType = this.onChangeType.bind(this);
+    this.onChangeAvailableFrom = this.onChangeAvailableFrom.bind(this);
+    this.onChangeAvailableTo = this.onChangeAvailableTo.bind(this);
     this.onChangeDescription = this.onChangeDescription.bind(this);
-    this.getTutorial = this.getTutorial.bind(this);
-    this.updatePublished = this.updatePublished.bind(this);
+    this.getInventory = this.getInventory.bind(this);
     this.updateTutorial = this.updateTutorial.bind(this);
-    this.deleteTutorial = this.deleteTutorial.bind(this);
+    this.deleteInventory = this.deleteInventory.bind(this);
 
     this.state = {
       currentTutorial: {
         id: null,
         name: "",
+        type: "",
         description: "",
+        dtAvailableFrom: "",
+        dtAvailableTo: "",
         published: false
       },
       message: ""
@@ -23,10 +28,10 @@ export default class Tutorial extends Component {
   }
 
   componentDidMount() {
-    this.getTutorial(this.props.match.params.id);
+    this.getInventory(this.props.match.params.id);
   }
 
-  onChangeTitle(e) {
+  onChangeName(e) {
     const name = e.target.value;
 
     this.setState(function(prevState) {
@@ -34,6 +39,19 @@ export default class Tutorial extends Component {
         currentTutorial: {
           ...prevState.currentTutorial,
           name: name
+        }
+      };
+    });
+  }
+
+  onChangeType(e) {
+    const type = e.target.value;
+
+    this.setState(function(prevState) {
+      return {
+        currentTutorial: {
+          ...prevState.currentTutorial,
+          type: type
         }
       };
     });
@@ -50,35 +68,34 @@ export default class Tutorial extends Component {
     }));
   }
 
-  getTutorial(id) {
+  onChangeAvailableFrom(e) {
+    const from = e.target.value;
+    
+    this.setState(prevState => ({
+      currentTutorial: {
+        ...prevState.currentTutorial,
+        dtAvailableFrom: from
+      }
+    }));
+  }
+
+  onChangeAvailableTo(e) {
+    const to = e.target.value;
+    
+    this.setState(prevState => ({
+      currentTutorial: {
+        ...prevState.currentTutorial,
+        dtAvailableTo: to
+      }
+    }));
+  }
+
+  getInventory(id) {
     TutorialDataService.get(id)
       .then(response => {
         this.setState({
           currentTutorial: response.data
         });
-        console.log(response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  }
-
-  updatePublished(status) {
-    var data = {
-      id: this.state.currentTutorial.id,
-      name: this.state.currentTutorial.name,
-      description: this.state.currentTutorial.description,
-      published: status
-    };
-
-    TutorialDataService.update(this.state.currentTutorial.id, data)
-      .then(response => {
-        this.setState(prevState => ({
-          currentTutorial: {
-            ...prevState.currentTutorial,
-            published: status
-          }
-        }));
         console.log(response.data);
       })
       .catch(e => {
@@ -94,19 +111,21 @@ export default class Tutorial extends Component {
       .then(response => {
         console.log(response.data);
         this.setState({
-          message: "The tutorial was updated successfully!"
+          message: "The inventory was updated successfully!"
         });
       })
       .catch(e => {
         console.log(e);
+        alert(e.response.data.message);
       });
   }
 
-  deleteTutorial() {    
+  deleteInventory() {    
     TutorialDataService.delete(this.state.currentTutorial.id)
       .then(response => {
         console.log(response.data);
-        this.props.history.push('/tutorials')
+        alert("Inventory was successfully deleted.");
+        this.props.history.push('/inventories');
       })
       .catch(e => {
         console.log(e);
@@ -120,16 +139,26 @@ export default class Tutorial extends Component {
       <div>
         {currentTutorial ? (
           <div className="edit-form">
-            <h4>Tutorial</h4>
+            <h4>Inventory Edit</h4>
             <form>
               <div className="form-group">
-                <label htmlFor="title">Title</label>
+                <label htmlFor="title">Name</label>
                 <input
                   type="text"
                   className="form-control"
                   id="name"
                   value={currentTutorial.name}
-                  onChange={this.onChangeTitle}
+                  onChange={this.onChangeName}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="title">Type</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="type"
+                  value={currentTutorial.type}
+                  onChange={this.onChangeType}
                 />
               </div>
               <div className="form-group">
@@ -142,6 +171,26 @@ export default class Tutorial extends Component {
                   onChange={this.onChangeDescription}
                 />
               </div>
+              <div className="form-group">
+                <label htmlFor="availableFrom">Available From</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="availableFrom"
+                  value={currentTutorial.dtAvailableFrom}
+                  onChange={this.onChangeAvailableFrom}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="availableTo">Available To</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="availableTo"
+                  value={currentTutorial.dtAvailableTo}
+                  onChange={this.onChangeAvailableTo}
+                />
+              </div>
 
               <div className="form-group">
                 <label>
@@ -151,29 +200,6 @@ export default class Tutorial extends Component {
               </div>
             </form>
 
-            {currentTutorial.published ? (
-              <button
-                className="badge badge-primary mr-2"
-                onClick={() => this.updatePublished(false)}
-              >
-                UnPublish
-              </button>
-            ) : (
-              <button
-                className="badge badge-primary mr-2"
-                onClick={() => this.updatePublished(true)}
-              >
-                Publish
-              </button>
-            )}
-
-            <button
-              className="badge badge-danger mr-2"
-              onClick={this.deleteTutorial}
-            >
-              Delete
-            </button>
-
             <button
               type="submit"
               className="badge badge-success"
@@ -181,6 +207,13 @@ export default class Tutorial extends Component {
             >
               Update
             </button>
+            <button
+              className="badge badge-danger mr-2"
+              onClick={this.deleteInventory}
+            >
+              Delete
+            </button>
+
             <p>{this.state.message}</p>
           </div>
         ) : (

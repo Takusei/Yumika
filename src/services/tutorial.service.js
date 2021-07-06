@@ -14,7 +14,10 @@ class TutorialDataService {
   }
 
   update(id, data) {
-    return http.put(`/inventories/${id}`, data);
+    const { name, type, description, dtAvailableFrom, dtAvailableTo } = data;
+    return http.patch(
+      `inventories?id=${id}&name=${name}&type=${type}&description=${description}&availableFrom=${dtAvailableFrom}&availableTo=${dtAvailableTo}`
+    );
   }
 
   delete(id) {

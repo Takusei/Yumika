@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 import AddTutorial from "./components/add-tutorial.component";
-import Tutorial from "./components/tutorial.component";
+import Inventory from "./components/inventory.component";
 import TutorialsList from "./components/tutorials-list.component";
 
 class App extends Component {
@@ -34,7 +34,7 @@ class App extends Component {
           <Switch>
             <Route exact path={["/", "/inventories"]} component={TutorialsList} />
             <Route exact path="/add" component={AddTutorial} />
-            <Route path="/inventories/id" component={Tutorial} />
+            <Route path="/inventories/:id" component={Inventory} />
           </Switch>
         </div>
       </div>
