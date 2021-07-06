@@ -47,6 +47,18 @@ class TutorialDataService {
     return http.get(`/inventories/availabilitySearch?from=${searchFrom}&to=${searchTo}`);
   }
 
+  getReservation(id) {
+    return http.get(`/reservations/${id}`);
+  }
+
+  updateReservation(id, data) {
+    const { guests } = data;
+    return http.get(`/reservations?id=${id}&guests=${guests}`);
+  }
+
+  cancelReservation(id) {
+    return http.patch(`/reservations/${id}/cancel`);
+  }
 }
 
 export default new TutorialDataService();

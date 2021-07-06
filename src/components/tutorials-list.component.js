@@ -258,12 +258,6 @@ export default class TutorialsList extends Component {
               </ul>
             </tbody>
           </table>
-          <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllInventories}
-          >
-            Remove All
-          </button>
         </div>
 
         <div className="col-md-6">

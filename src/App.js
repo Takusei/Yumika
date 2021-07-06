@@ -6,6 +6,7 @@ import "./App.css";
 
 import AddTutorial from "./components/add-tutorial.component";
 import Inventory from "./components/inventory.component";
+import Reservation from "./components/reservation.component";
 import TutorialsList from "./components/tutorials-list.component";
 
 class App extends Component {
@@ -35,6 +36,7 @@ class App extends Component {
             <Route exact path={["/", "/inventories"]} component={TutorialsList} />
             <Route exact path="/add" component={AddTutorial} />
             <Route path="/inventories/:id" component={Inventory} />
+            <Route path="/reservations/:id" component={Reservation} />
           </Switch>
         </div>
       </div>
