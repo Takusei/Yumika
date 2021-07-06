@@ -81,9 +81,8 @@ export default class AddTutorial extends Component {
         });
         console.log(response.data);
       })
-      .catch(e => {
-        console.log(e);
-      });
+      .catch(e => {alert("Error Message : "+ e.response.data.message)});
+      //.catch(e => {console.log(e.response.data)});
   }
 
   newTutorial() {
