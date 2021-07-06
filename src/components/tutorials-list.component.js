@@ -90,9 +90,10 @@ export default class TutorialsList extends Component {
     this.setState({
       currentInventory: inventory,
       currentIndex: index,
-
     });
     this.setActiveReservation(inventory);
+    console.log(index);
+    console.log(this.state);
   }
 
   setActiveReservation(inventory) {
@@ -226,41 +227,36 @@ export default class TutorialsList extends Component {
           )}
         </div>
 
-        <div className="col-md-12">
+        <div className="col-md-8">
           <h4>Inventory List</h4>
           <table className="table table-fixed">
             <thead>
             <tr>
-              <th scope="col" className="col-md-4">Inventory Id</th>
-              <th scope="col" className="col-md-4">Supplier Name</th>
-              <th scope="col" className="col-md-4">Room Type</th>
+              <th className="col-md-4">#</th>
+              <th className="col-md-4">Inventory Name</th>
+              <th className="col-md-4">Room Type</th>
             </tr>
             </thead>
-            <tbody className="col-12">
-              <ul className="list-group col-12">
+            <tbody>
                 {inventories &&
                 inventories.map((inventory, index) => (
-                    <li
+                    <tr
                       className={
-                        "list-group-item " +
-                        (index === currentIndex ? "active" : "")
+                        (index === currentIndex ? "table-active" : "")
                       }
                       onClick={() => this.setActiveInventory(inventory, index)}
                       key={index}
                     >
-                      <tr>
-                        <td className="col-4">{inventory.id}</td>
-                        <td className="col-4">{inventory.name}</td>
-                        <td className="col-4">{inventory.type}</td>
-                      </tr>
-                    </li>
+                        <th className="col-md-4">{index + 1}</th>
+                        <td className="col-md-4">{inventory.name}</td>
+                        <td className="col-md-4">{inventory.type}</td>
+                    </tr>
                   ))}
-              </ul>
             </tbody>
           </table>
         </div>
 
-        <div className="col-md-6">
+        <div className="col-md-4">
           {currentInventory ? (
             <div>
               <h4>Inventory Details</h4>
@@ -309,7 +305,7 @@ export default class TutorialsList extends Component {
 
               <Link
                 to={"/inventories/" + currentInventory.id}
-                className="badge badge-warning"
+                className="btn btn-warning"
               >
                 Edit
               </Link>
@@ -322,40 +318,42 @@ export default class TutorialsList extends Component {
           )}
         </div>
 
-        <div className="col-md-6">
-          <h4>Reservation List</h4>
-          <table className="table table-fixed">
-            <thead>
-            <tr>
-              <th scope="col" className="col-md-3">Guests</th>
-              <th scope="col" className="col-md-3">CheckIn</th>
-              <th scope="col" className="col-md-3">CheckOut</th>
-            </tr>
-            </thead>
-            <tbody className="col-12">
-              <ul className="list-group">
-                {reservations &&
-                reservations.map((reservations, index) => (
-                    <li
-                        className={"list-group-item"}
-                        key={index}
-                    >
-                      <tr>
-                        <td className="col-4">{reservations.guests}</td>
-                        <td className="col-4">{reservations.dtCheckIn}</td>
-                        <td className="col-4">{reservations.dtCheckOut}</td>
-                      </tr>
-                      <Link
-                          to={"/reservations/" + reservations.id}
-                          className="badge badge-warning"
-                      >
-                        Edit
-                      </Link>
-                    </li>
-                ))}
-              </ul>
-            </tbody>
-          </table>
+        <div className="col-md-12">
+            <div>
+              <h4>Reservation List</h4>
+              <table className="table table-fixed">
+                <thead>
+                <tr>
+                  <th className="col-md-3">Guests</th>
+                  <th className="col-md-3">CheckIn</th>
+                  <th className="col-md-3">CheckOut</th>
+                  <th className="col-md-3">actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {reservations &&
+                    reservations.map((reservations, index) => (
+                      <div>
+                          <tr
+                            key={index}
+                          >
+                            <td className="col-md-3">{reservations.guests}</td>
+                            <td className="col-md-3">{reservations.dtCheckIn}</td>
+                            <td className="col-md-3">{reservations.dtCheckOut}</td>
+                            <td className="col-md-3">
+                              <Link
+                                  to={"/reservations/" + reservations.id}
+                                  className="btn btn-warning"
+                              >
+                                Edit
+                              </Link>
+                            </td>
+                          </tr>
+                      </div>
+                    ))}
+                </tbody>
+              </table>
+            </div>
         </div>
       </div>
     );
