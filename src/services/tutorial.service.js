@@ -53,7 +53,7 @@ class TutorialDataService {
 
   updateReservation(id, data) {
     const { guests } = data;
-    return http.get(`/reservations?id=${id}&guests=${guests}`);
+    return http.patch(`/reservations?id=${id}&guests=${guests}`);
   }
 
   cancelReservation(id) {

@@ -15,7 +15,7 @@ class App extends Component {
       <div>
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <Link to={"/inventories"} className="navbar-brand">
-            Inventory Management System
+            Hakone Inn Inventory Management System
           </Link>
           <div className="navbar-nav mr-auto">
             <li className="nav-item">

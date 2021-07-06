@@ -113,6 +113,10 @@ export default class Reservation extends Component {
         this.setState({
           message: "The reservation was updated successfully."
         });
+        setTimeout(
+          () => this.props.history.push('/inventories'),
+          1500
+        );
       })
       .catch(e => {
         console.log(e);
@@ -125,7 +129,10 @@ export default class Reservation extends Component {
       .then(response => {
         console.log(response.data);
         alert("The reservation has been successfully canceled.");
-        this.props.history.push('/inventories');
+        setTimeout(
+          () => this.props.history.push('/inventories'),
+          1500
+        );
       })
       .catch(e => {
         console.log(e);
@@ -184,7 +191,7 @@ export default class Reservation extends Component {
 
             <button
               type="submit"
-              className="btn btn-success"
+              className="btn btn-primary"
               onClick={this.updateReservation}
             >
               Update

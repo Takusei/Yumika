@@ -186,12 +186,12 @@ export default class TutorialsList extends Component {
 
     return (
       <div className="list row">
-        <div className="col-md-12">
+        <div className="col-md-12 mb-4">
           <div className="input-group mb-3">
             <input
               type="text"
               className="form-control"
-              placeholder="Search by Name"
+              placeholder="Search by Inventory Name"
               value={searchName}
               onChange={this.onChangeSearchName}
             />
@@ -227,9 +227,9 @@ export default class TutorialsList extends Component {
           )}
         </div>
 
-        <div className="col-md-8">
+        <div className="col-md-8 mb-4">
           <h4>Inventory List</h4>
-          <table className="table table-fixed">
+          <table className="table table-fixed table-hover">
             <thead>
             <tr>
               <th className="col-md-4">#</th>
@@ -257,59 +257,56 @@ export default class TutorialsList extends Component {
         </div>
 
         <div className="col-md-4">
+          <h4>Inventory Details</h4>
           {currentInventory ? (
-            <div>
-              <h4>Inventory Details</h4>
-              <div>
-                <label>
-                  <strong>Id:</strong>
-                </label>{" "}
-                {currentInventory.id}
-              </div>
-              <div>
-                <label>
-                  <strong>Name:</strong>
-                </label>{" "}
-                {currentInventory.name}
-              </div>
-              <div>
-                <label>
-                  <strong>Type:</strong>
-                </label>{" "}
-                {currentInventory.type}
-              </div>
-              <div>
-                <label>
-                  <strong>Description:</strong>
-                </label>{" "}
-                {currentInventory.description}
-              </div>
-              <div>
-                <label>
-                  <strong>Available From:</strong>
-                </label>{" "}
-                {currentInventory.dtAvailableFrom}
-              </div>
-              <div>
-                <label>
-                  <strong>Available To:</strong>
-                </label>{" "}
-                {currentInventory.dtAvailableTo}
-              </div>
-              <div>
-                <label>
-                  <strong>Status:</strong>
-                </label>{" "}
-                {currentInventory.status}
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">
+                  <strong>
+                  {currentInventory.name}
+                  </strong>
+                </h5>
+                <div className="card-text">
+                  <div>
+                    <label>
+                      <strong>Type:</strong>
+                    </label>{" "}
+                    {currentInventory.type}
+                  </div>
+                  <div>
+                    <label>
+                      <strong>Description:</strong>
+                    </label>{" "}
+                    {currentInventory.description}
+                  </div>
+                  <div className="mb-2">
+                    <label>
+                      <strong>Available From:</strong>
+                    </label>{" "}
+                    <br/>
+                    {currentInventory.dtAvailableFrom}
+                  </div>
+                  <div className="mb-2">
+                    <label>
+                      <strong>Available To:</strong>
+                    </label>{" "}
+                    <br/>
+                    {currentInventory.dtAvailableTo}
+                  </div>
+                  <div className="mb-2"></div>
+
+                  <Link
+                    to={"/inventories/" + currentInventory.id}
+                    className="btn btn-success"
+                  >
+                    Edit
+                  </Link>
+                  <div className="mb-2"></div>
+
+                </div>
               </div>
 
-              <Link
-                to={"/inventories/" + currentInventory.id}
-                className="btn btn-warning"
-              >
-                Edit
-              </Link>
-            </div>
+              </div>
           ) : (
             <div>
               <br />
@@ -319,15 +316,18 @@ export default class TutorialsList extends Component {
         </div>
 
         <div className="col-md-12">
+          {
+            reservations.length !== 0 &&
+          (
             <div>
-              <h4>Reservation List</h4>
-              <table className="table table-fixed">
+              <h4>Reservation List for "{currentInventory.name}"</h4>
+              <table className="table table-fixed table-hover">
                 <thead>
                 <tr>
-                  <th className="col-md-3">Guests</th>
                   <th className="col-md-3">CheckIn</th>
                   <th className="col-md-3">CheckOut</th>
-                  <th className="col-md-3">actions</th>
+                  <th className="col-md-3">Guests</th>
+                  <th className="col-md-3">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -337,13 +337,13 @@ export default class TutorialsList extends Component {
                           <tr
                             key={index}
                           >
-                            <td className="col-md-3">{reservations.guests}</td>
                             <td className="col-md-3">{reservations.dtCheckIn}</td>
                             <td className="col-md-3">{reservations.dtCheckOut}</td>
+                            <td className="col-md-3">{reservations.guests}</td>
                             <td className="col-md-3">
                               <Link
                                   to={"/reservations/" + reservations.id}
-                                  className="btn btn-warning"
+                                  className="btn btn-success"
                               >
                                 Edit
                               </Link>
@@ -354,6 +354,8 @@ export default class TutorialsList extends Component {
                 </tbody>
               </table>
             </div>
+          )
+          }
         </div>
       </div>
     );
