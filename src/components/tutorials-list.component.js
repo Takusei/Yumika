@@ -190,13 +190,13 @@ export default class TutorialsList extends Component {
           <div className="input-group mb-3">
             <input
               type="text"
-              className="form-control"
+              className="form-control col-auto"
               placeholder="Search by Inventory Name"
               value={searchName}
               onChange={this.onChangeSearchName}
             />
             <DatePicker
-                className="form-control"
+                className="form-control col-auto"
                 selected={Date.parse(searchFrom)}
                 onChange={this.handleChangeFromTo}
                 selectsRange
@@ -204,7 +204,7 @@ export default class TutorialsList extends Component {
                 startDate={Date.parse(searchFrom)}
                 endDate={Date.parse(searchTo)}
                 minDate={new Date()}
-                dateFormat="yyyy-MM-dd"
+                dateFormat="yy-MM-dd"
                 showClearButton={true}
             />
             <div className="input-group-append">
@@ -333,7 +333,6 @@ export default class TutorialsList extends Component {
                 <tbody>
                     {reservations &&
                     reservations.map((reservations, index) => (
-                      <div>
                           <tr
                             key={index}
                           >
@@ -349,7 +348,6 @@ export default class TutorialsList extends Component {
                               </Link>
                             </td>
                           </tr>
-                      </div>
                     ))}
                 </tbody>
               </table>
