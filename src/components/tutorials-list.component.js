@@ -191,12 +191,8 @@ export default class TutorialsList extends Component {
     const header = [[
       { type: 'string', label: 'reservation id' },
       { type: 'string', label: 'name' },
-      { type: 'string', label: 'resource' },
       { type: 'date', label: 'dtCheckIn' },
       { type: 'date', label: 'dtCheckOut' },
-      { type: 'number', label: 'duration' },
-      { type: 'number', label: 'percent' },
-      { type: 'string', label: 'dependencies' }
     ]];
     const reservationData = 
       this.state.reservations
@@ -206,15 +202,15 @@ export default class TutorialsList extends Component {
       })
       .map((r) => {
         console.log(r)
+        const checkIn = new Date(r.dtCheckIn);
+        const checkOut = new Date(r.dtCheckOut);
+        checkIn.setHours(0, 0, 0);
+        checkOut.setHours(24, 0, 0);
         return [
-          'reservation' + r.id,
+          'reservation',
           '#' + r.id + ' guest:' + r.guests,
-          String(r.inventoryId) + "-" + String(r.id),
-          new Date(r.dtCheckIn),
-          new Date(r.dtCheckOut),
-          null,
-          100,
-          null
+          checkIn,
+          checkOut,
         ]
       }
     );
@@ -387,12 +383,12 @@ export default class TutorialsList extends Component {
               <h4>Reservation List for "{currentInventory.name}"</h4>
               <Chart
                 width={'100%'}
-                height={'250px'}
-                chartType="Gantt"
+                height={'120px'}
+                chartType="Timeline"
                 loader={<div>Loading Chart</div>}
                 data={this.formatReservationData()}
                 options={{
-                  height: 400,
+                  height: 120,
                   gantt: {
                     trackHeight: 30,
                   },
@@ -412,6 +408,7 @@ export default class TutorialsList extends Component {
             reservations.length !== 0 &&
           (
             <div>
+              <h4>All Reservation for "{currentInventory.name}"</h4>
               <table className="table table-fixed">
                 <thead>
                 <tr>
