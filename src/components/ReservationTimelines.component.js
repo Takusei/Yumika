@@ -86,14 +86,17 @@ export default class ReservationTimelinesComponent extends Component {
 
         return (
             <div className="col-md-12 mb-4">
-                <Chart
-                    width={'100%'}
-                    height={'800px'}
-                    chartType="Timeline"
-                    loader={<div>Loading Chart</div>}
-                    data={[columns, ...rows]}
-                    // rootProps={{ 'data-testid': '3' }}
-                />
+                <h4 className="d-flex justify-content-center">Reservation List</h4>
+                <div className="col-md-12 mb-4">
+                    <Chart
+                        width={'100%'}
+                        height={'800px'}
+                        chartType="Timeline"
+                        loader={<div>Loading Chart</div>}
+                        data={[columns, ...rows]}
+                        // rootProps={{ 'data-testid': '3' }}
+                    />
+                </div>
             </div>
         );
     }
