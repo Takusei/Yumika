@@ -8,6 +8,7 @@ import AddTutorial from "./components/add-tutorial.component";
 import Inventory from "./components/inventory.component";
 import Reservation from "./components/reservation.component";
 import TutorialsList from "./components/tutorials-list.component";
+import ReservationTimelines from "./components/ReservationTimelines.component";
 
 class App extends Component {
   render() {
@@ -24,6 +25,11 @@ class App extends Component {
               </Link>
             </li>
             <li className="nav-item">
+              <Link to={"/reservations"} className="nav-link">
+                Reservations
+              </Link>
+            </li>
+            <li className="nav-item">
               <Link to={"/add"} className="nav-link">
                 Add
               </Link>
@@ -37,6 +43,7 @@ class App extends Component {
             <Route exact path="/add" component={AddTutorial} />
             <Route path="/inventories/:id" component={Inventory} />
             <Route path="/reservations/:id" component={Reservation} />
+            <Route path="/reservations" component={ReservationTimelines} />
           </Switch>
         </div>
       </div>
