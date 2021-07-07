@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import format from "date-fns/format";
 import "react-datepicker/dist/react-datepicker.css";
+import Chart from "react-google-charts";
 
 export default class TutorialsList extends Component {
   constructor(props) {
@@ -15,6 +16,7 @@ export default class TutorialsList extends Component {
     this.removeAllInventories = this.removeAllInventories.bind(this);
     this.searchBoth = this.searchBoth.bind(this);
     this.handleChangeFromTo = this.handleChangeFromTo.bind(this);
+    this.formatReservationData = this.formatReservationData.bind(this);
 
 
     this.state = {
@@ -181,6 +183,40 @@ export default class TutorialsList extends Component {
     }
   }
 
+  dateFormatForChart(dateString) {
+
+  }
+
+  formatReservationData() {
+    const header = [[
+      { type: 'string', label: 'reservation id' },
+      { type: 'string', label: 'name' },
+      { type: 'string', label: 'resource' },
+      { type: 'date', label: 'dtCheckIn' },
+      { type: 'date', label: 'dtCheckOut' },
+      { type: 'number', label: 'duration' },
+      { type: 'number', label: 'percent' },
+      { type: 'string', label: 'dependencies' }
+    ]];
+    const reservationData = 
+      this.state.reservations.map((r) => {
+        console.log(r)
+        return [
+          'reservation' + r.id,
+          '#' + r.id + ' guest:' + r.guests,
+          String(r.inventoryId) + "-" + String(r.id),
+          new Date(r.dtCheckIn),
+          new Date(r.dtCheckOut),
+          null,
+          100,
+          null
+        ]
+      }
+    );
+    console.log(reservationData);
+    return header.concat(reservationData)
+  }
+
   render() {
     const { searchName, searchFrom, searchTo, inventories, reservations, currentInventory, currentIndex } = this.state;
 
@@ -321,6 +357,33 @@ export default class TutorialsList extends Component {
           (
             <div>
               <h4>Reservation List for "{currentInventory.name}"</h4>
+              <Chart
+                width={'100%'}
+                height={'300px'}
+                chartType="Gantt"
+                loader={<div>Loading Chart</div>}
+                data={this.formatReservationData()}
+                options={{
+                  height: 400,
+                  gantt: {
+                    trackHeight: 30,
+                  },
+                  labelStyle: {
+                    color: 'black',
+                  }
+                }}
+                rootProps={{ 'data-testid': '2' }}
+              />
+            </div>
+          )
+          }
+        </div>
+
+        <div className="col-md-12 mt-0 pt-0">
+          {
+            reservations.length !== 0 &&
+          (
+            <div>
               <table className="table table-fixed table-hover">
                 <thead>
                 <tr>
