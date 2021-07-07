@@ -15,7 +15,7 @@ class App extends Component {
     return (
       <div>
         <nav className="navbar navbar-expand navbar-dark bg-dark">
-          <Link to={"/inventories"} className="navbar-brand">
+          <Link to={"/"} className="navbar-brand">
             Hakone Inn Inventory Management System
           </Link>
           <div className="navbar-nav mr-auto">
@@ -39,11 +39,11 @@ class App extends Component {
 
         <div className="container mt-3">
           <Switch>
-            <Route exact path={["/", "/inventories"]} component={TutorialsList} />
+            <Route exact path={["/", "/reservations"]} component={ReservationTimelines} />
+            <Route exact path="/inventories" component={TutorialsList} />
             <Route exact path="/add" component={AddTutorial} />
             <Route path="/inventories/:id" component={Inventory} />
             <Route path="/reservations/:id" component={Reservation} />
-            <Route path="/reservations" component={ReservationTimelines} />
           </Switch>
         </div>
       </div>
