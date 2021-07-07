@@ -199,7 +199,12 @@ export default class TutorialsList extends Component {
       { type: 'string', label: 'dependencies' }
     ]];
     const reservationData = 
-      this.state.reservations.map((r) => {
+      this.state.reservations
+      .filter((r) => {
+        const today = new Date();
+        return today < new Date(r.dtCheckIn) || today < new Date(r.dtCheckOut);
+      })
+      .map((r) => {
         console.log(r)
         return [
           'reservation' + r.id,
@@ -359,7 +364,7 @@ export default class TutorialsList extends Component {
               <h4>Reservation List for "{currentInventory.name}"</h4>
               <Chart
                 width={'100%'}
-                height={'300px'}
+                height={'250px'}
                 chartType="Gantt"
                 loader={<div>Loading Chart</div>}
                 data={this.formatReservationData()}
