@@ -113,6 +113,10 @@ export default class Inventory extends Component {
         this.setState({
           message: "The inventory was updated successfully!"
         });
+        setTimeout(
+          () => this.props.history.push('/inventories'),
+          1500
+        );
       })
       .catch(e => {
         console.log(e);
@@ -125,7 +129,10 @@ export default class Inventory extends Component {
       .then(response => {
         console.log(response.data);
         alert("Inventory was successfully deleted.");
-        this.props.history.push('/inventories');
+        setTimeout(
+          () => this.props.history.push('/inventories'),
+          1500
+        );
       })
       .catch(e => {
         console.log(e);
@@ -192,23 +199,18 @@ export default class Inventory extends Component {
                 />
               </div>
 
-              <div className="form-group">
-                <label>
-                  <strong>Status:</strong>
-                </label>
-                {currentTutorial.published ? "Published" : "Pending"}
-              </div>
             </form>
 
             <button
               type="submit"
-              className="badge badge-success"
+              className="btn btn-primary"
               onClick={this.updateTutorial}
             >
               Update
             </button>
+            <span> </span>
             <button
-              className="badge badge-danger mr-2"
+              className="btn btn-danger"
               onClick={this.deleteInventory}
             >
               Delete
