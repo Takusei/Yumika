@@ -18,12 +18,17 @@ export default class ReservationTimelinesComponent extends Component {
         this.setRowForInventory = this.setRowForInventory.bind(this);
         this.retrieveReservations = this.retrieveReservations.bind(this);
         this.retrieveInventories = this.retrieveInventories.bind(this);
+        this.setArrivalInfo = this.setArrivalInfo.bind(this);
 
         this.state = {
             inventories:[],
             reservations:[],
             rows: [],
             columns:[],
+            arrivals: null,
+            departures: null,
+            guestsArrivals: null,
+            guestsDeparture: null,
             size: 48
         };
     }
@@ -67,6 +72,38 @@ export default class ReservationTimelinesComponent extends Component {
         })
 
         this.setRowForInventory(this.state.inventories);
+        this.setArrivalInfo(this.state);
+    }
+
+    setArrivalInfo(state) {
+        const { reservations } = state;
+        let arrivals = 0;
+        let departures = 0;
+        let guestsArrivals = 0;
+        let guestsDeparture = 0;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        reservations.map(r => {
+            const checkIn = new Date(r.dtCheckIn);
+            checkIn.setHours(0, 0, 0, 0);
+            const checkOut = new Date(r.dtCheckOut);
+            checkOut.setHours(0, 0, 0, 0);
+            if (checkIn.valueOf() === today.valueOf()) {
+                arrivals++;
+                guestsArrivals += r.guests;
+            }
+            if (checkOut.valueOf() === today.valueOf()) {
+                departures++;
+                guestsDeparture += r.guests;
+            }
+        })
+        this.setState({
+            arrivals: arrivals,
+            departures: departures,
+            guestsDeparture: guestsDeparture,
+            guestsArrivals: guestsArrivals,
+        });
     }
 
     setRowForInventory(inventories){
@@ -123,7 +160,7 @@ export default class ReservationTimelinesComponent extends Component {
                                                 <BoxArrowInRight size={this.state.size}/>
                                             </h3>
                                             <h1 className="p-2">
-                                                <div>2</div>
+                                                <div>{this.state.arrivals}</div>
                                             </h1>
                                         </div>
                                         arrivals today
@@ -145,7 +182,7 @@ export default class ReservationTimelinesComponent extends Component {
                                                 <Person size={this.state.size} />
                                             </h3>
                                             <h1 className="p-2">
-                                                <div>2</div>
+                                                <div>{this.state.guestsArrivals}</div>
                                             </h1>
                                         </div>
                                         guests today
@@ -167,7 +204,7 @@ export default class ReservationTimelinesComponent extends Component {
                                                 <BoxArrowLeft size={this.state.size} />
                                             </h3>
                                             <h1 className="p-2">
-                                              2  
+                                              <div>{this.state.departures}</div>  
                                             </h1>
                                         </div>
                                         departures today
@@ -189,7 +226,7 @@ export default class ReservationTimelinesComponent extends Component {
                                                 <Person size={this.state.size} />
                                             </h3>
                                             <h1 className="p-2">
-                                                <div>2</div>
+                                                <div>{this.state.guestsDeparture}</div>
                                             </h1>
                                         </div>
                                         guests today
