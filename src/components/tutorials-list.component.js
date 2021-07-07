@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import format from "date-fns/format";
 import "react-datepicker/dist/react-datepicker.css";
+import Chart from "react-google-charts";
 
 export default class TutorialsList extends Component {
   constructor(props) {
@@ -15,6 +16,7 @@ export default class TutorialsList extends Component {
     this.removeAllInventories = this.removeAllInventories.bind(this);
     this.searchBoth = this.searchBoth.bind(this);
     this.handleChangeFromTo = this.handleChangeFromTo.bind(this);
+    this.formatReservationData = this.formatReservationData.bind(this);
 
 
     this.state = {
@@ -181,6 +183,64 @@ export default class TutorialsList extends Component {
     }
   }
 
+  dateFormatForChart(dateString) {
+
+  }
+
+  formatReservationData() {
+    const header = [[
+      { type: 'string', label: 'reservation id' },
+      { type: 'string', label: 'name' },
+      { type: 'date', label: 'dtCheckIn' },
+      { type: 'date', label: 'dtCheckOut' },
+    ]];
+    const reservationData = 
+      this.state.reservations
+      .filter((r) => {
+        const today = new Date();
+        return today < new Date(r.dtCheckIn) || today < new Date(r.dtCheckOut);
+      })
+      .map((r) => {
+        console.log(r)
+        const checkIn = new Date(r.dtCheckIn);
+        const checkOut = new Date(r.dtCheckOut);
+        checkIn.setHours(0, 0, 0);
+        checkOut.setHours(24, 0, 0);
+        return [
+          'reservation',
+          '#' + r.id + ' guest:' + r.guests,
+          checkIn,
+          checkOut,
+        ]
+      }
+    );
+    console.log(reservationData);
+    return header.concat(reservationData)
+  }
+
+  getDateBadge(d) {
+    const today = new Date();
+    return d < today ? (
+      <span className="badge badge-secondary">Past</span>
+    ) : (
+      <span className="badge badge-primary">
+        Will
+      </span>
+    )
+  }
+
+  sortReservationByDateAndCompletion(reservations) {
+    const pastReservation = reservations.filter((r) => {
+      const today = new Date();
+      return new Date(r.dtCheckOut) < today;
+    })
+    const upcommingReservation = reservations.filter((r) => {
+      const today = new Date();
+      return new Date(r.dtCheckOut) >= today;
+    })
+    return upcommingReservation.concat(pastReservation);
+  }
+
   render() {
     const { searchName, searchFrom, searchTo, inventories, reservations, currentInventory, currentIndex } = this.state;
 
@@ -321,25 +381,60 @@ export default class TutorialsList extends Component {
           (
             <div>
               <h4>Reservation List for "{currentInventory.name}"</h4>
-              <table className="table table-fixed table-hover">
+              <Chart
+                width={'100%'}
+                height={'120px'}
+                chartType="Timeline"
+                loader={<div>Loading Chart</div>}
+                data={this.formatReservationData()}
+                options={{
+                  height: 120,
+                  gantt: {
+                    trackHeight: 30,
+                  },
+                  labelStyle: {
+                    color: 'black',
+                  }
+                }}
+                rootProps={{ 'data-testid': '2' }}
+              />
+            </div>
+          )
+          }
+        </div>
+
+        <div className="col-md-12">
+          {
+            reservations.length !== 0 &&
+          (
+            <div>
+              <h4>All Reservation for "{currentInventory.name}"</h4>
+              <table className="table table-fixed">
                 <thead>
                 <tr>
-                  <th className="col-md-3">CheckIn</th>
-                  <th className="col-md-3">CheckOut</th>
-                  <th className="col-md-3">Guests</th>
-                  <th className="col-md-3">Actions</th>
+                  <th className="col-md-2">#</th>
+                  <th className="col-md-2">Status</th>
+                  <th className="col-md-2">CheckIn</th>
+                  <th className="col-md-2">CheckOut</th>
+                  <th className="col-md-2">Guests</th>
+                  <th className="col-md-2">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                     {reservations &&
-                    reservations.map((reservations, index) => (
+                    this.sortReservationByDateAndCompletion(reservations)
+                    .map((reservations, index) => (
                           <tr
                             key={index}
                           >
-                            <td className="col-md-3">{reservations.dtCheckIn}</td>
-                            <td className="col-md-3">{reservations.dtCheckOut}</td>
-                            <td className="col-md-3">{reservations.guests}</td>
-                            <td className="col-md-3">
+                            <td className="col-md-2">{index + 1}</td>
+                            <td className="col-md-2">
+                              {this.getDateBadge(new Date(reservations.dtCheckOut))}
+                            </td>
+                            <td className="col-md-2">{reservations.dtCheckIn}</td>
+                            <td className="col-md-2">{reservations.dtCheckOut}</td>
+                            <td className="col-md-2">{reservations.guests}</td>
+                            <td className="col-md-2">
                               <Link
                                   to={"/reservations/" + reservations.id}
                                   className="btn btn-success"
