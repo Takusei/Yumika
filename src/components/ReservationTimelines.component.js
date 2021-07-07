@@ -15,15 +15,48 @@ export default class ReservationTimelinesComponent extends Component {
         this.setData = this.setData.bind(this);
         this.addRow = this.addRow.bind(this);
         this.setRowForInventory = this.setRowForInventory.bind(this);
+        this.retrieveReservations = this.retrieveReservations.bind(this);
+        this.retrieveInventories = this.retrieveInventories.bind(this);
 
         this.state = {
+            inventories:[],
+            reservations:[],
             rows: [],
             columns:[]
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        await this.retrieveInventories();
+        await this.retrieveReservations();
         this.setData();
+    }
+
+
+    async retrieveInventories() {
+        await TutorialDataService.getAll()
+            .then(response => {
+                this.setState({
+                    inventories: response.data
+                });
+                console.log("retrieve inventory", response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
+
+    async retrieveReservations() {
+        await TutorialDataService.getAllReservation()
+            .then(response => {
+                this.setState({
+                    reservations: response.data
+                });
+                console.log("retrieve reservations", response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
     }
 
     setData(){
@@ -31,19 +64,12 @@ export default class ReservationTimelinesComponent extends Component {
             columns:columns
         })
 
-        TutorialDataService.getAll()
-            .then(response => {
-                this.setRowForInventory(response.data);
-            })
-            .catch(e => {
-                console.log(e);
-            });
+        this.setRowForInventory(this.state.inventories);
     }
 
-    async setRowForInventory(inventories){
+    setRowForInventory(inventories){
         for (const inventory of inventories) {
-            let reservations = await this.findReservationsForInventory(inventory);
-
+            let reservations = this.findReservationsForInventory(inventory);
             if (reservations.length === 0){
                 // this.addRow([inventory.name, "Guests:0",
                 //     new Date(),new Date() ])
@@ -56,20 +82,13 @@ export default class ReservationTimelinesComponent extends Component {
         }
     }
 
-    async findReservationsForInventory(inventory) {
-        let reservations = [];
-        await TutorialDataService.getAllReservation()
-            .then(response => {
-                reservations = response.data;
-                reservations = reservations.filter(reservation => reservation.inventoryId === inventory.id);
-                reservations = reservations.filter(reservation => (
-                    new Date(reservation.dtCheckIn) > new Date()
-                ));
-                // console.log("reservation", reservations)
-            })
-            .catch(e => {
-                console.log(e);
-            });
+
+     findReservationsForInventory(inventory) {
+        let reservations = this.state.reservations;
+        reservations = reservations.filter(reservation => reservation.inventoryId === inventory.id);
+        reservations = reservations.filter(reservation => (
+            new Date(reservation.dtCheckIn) > new Date()
+        ));
         return reservations;
     }
 
