@@ -222,6 +222,29 @@ export default class TutorialsList extends Component {
     return header.concat(reservationData)
   }
 
+  getDateBadge(d) {
+    const today = new Date();
+    return d < today ? (
+      <span className="badge badge-secondary">Past</span>
+    ) : (
+      <span className="badge badge-primary">
+        Will
+      </span>
+    )
+  }
+
+  sortReservationByDateAndCompletion(reservations) {
+    const pastReservation = reservations.filter((r) => {
+      const today = new Date();
+      return new Date(r.dtCheckOut) < today;
+    })
+    const upcommingReservation = reservations.filter((r) => {
+      const today = new Date();
+      return new Date(r.dtCheckOut) >= today;
+    })
+    return upcommingReservation.concat(pastReservation);
+  }
+
   render() {
     const { searchName, searchFrom, searchTo, inventories, reservations, currentInventory, currentIndex } = this.state;
 
@@ -384,30 +407,37 @@ export default class TutorialsList extends Component {
           }
         </div>
 
-        <div className="col-md-12 mt-0 pt-0">
+        <div className="col-md-12">
           {
             reservations.length !== 0 &&
           (
             <div>
-              <table className="table table-fixed table-hover">
+              <table className="table table-fixed">
                 <thead>
                 <tr>
-                  <th className="col-md-3">CheckIn</th>
-                  <th className="col-md-3">CheckOut</th>
-                  <th className="col-md-3">Guests</th>
-                  <th className="col-md-3">Actions</th>
+                  <th className="col-md-2">#</th>
+                  <th className="col-md-2">Status</th>
+                  <th className="col-md-2">CheckIn</th>
+                  <th className="col-md-2">CheckOut</th>
+                  <th className="col-md-2">Guests</th>
+                  <th className="col-md-2">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                     {reservations &&
-                    reservations.map((reservations, index) => (
+                    this.sortReservationByDateAndCompletion(reservations)
+                    .map((reservations, index) => (
                           <tr
                             key={index}
                           >
-                            <td className="col-md-3">{reservations.dtCheckIn}</td>
-                            <td className="col-md-3">{reservations.dtCheckOut}</td>
-                            <td className="col-md-3">{reservations.guests}</td>
-                            <td className="col-md-3">
+                            <td className="col-md-2">{index + 1}</td>
+                            <td className="col-md-2">
+                              {this.getDateBadge(new Date(reservations.dtCheckOut))}
+                            </td>
+                            <td className="col-md-2">{reservations.dtCheckIn}</td>
+                            <td className="col-md-2">{reservations.dtCheckOut}</td>
+                            <td className="col-md-2">{reservations.guests}</td>
+                            <td className="col-md-2">
                               <Link
                                   to={"/reservations/" + reservations.id}
                                   className="btn btn-success"
