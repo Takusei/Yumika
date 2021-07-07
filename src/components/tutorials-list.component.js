@@ -19,6 +19,7 @@ export default class TutorialsList extends Component {
 
     this.state = {
       inventories: [],
+      reservations:[],
       currentInventory: null,
       currentIndex: -1,
       searchName: "",
@@ -88,8 +89,26 @@ export default class TutorialsList extends Component {
   setActiveInventory(inventory, index) {
     this.setState({
       currentInventory: inventory,
-      currentIndex: index
+      currentIndex: index,
     });
+    this.setActiveReservation(inventory);
+    console.log(index);
+    console.log(this.state);
+  }
+
+  setActiveReservation(inventory) {
+    TutorialDataService.getAllReservation()
+        .then(response => {
+          let reservations = response.data;
+          reservations = reservations.filter(reservations => reservations.inventoryId === inventory.id);
+          this.setState({
+            reservations: reservations
+          });
+          console.log("retrieve reservations", reservations);
+        })
+        .catch(e => {
+          console.log(e);
+        });
   }
 
   removeAllInventories() {
@@ -163,21 +182,21 @@ export default class TutorialsList extends Component {
   }
 
   render() {
-    const { searchName, searchFrom, searchTo, inventories, currentInventory, currentIndex } = this.state;
+    const { searchName, searchFrom, searchTo, inventories, reservations, currentInventory, currentIndex } = this.state;
 
     return (
       <div className="list row">
-        <div className="col-md-8">
+        <div className="col-md-12 mb-4">
           <div className="input-group mb-3">
             <input
               type="text"
-              className="form-control"
-              placeholder="Search by name"
+              className="form-control col-auto"
+              placeholder="Search by Inventory Name"
               value={searchName}
               onChange={this.onChangeSearchName}
             />
             <DatePicker
-                className="form-control"
+                className="form-control col-auto"
                 selected={Date.parse(searchFrom)}
                 onChange={this.handleChangeFromTo}
                 selectsRange
@@ -185,7 +204,7 @@ export default class TutorialsList extends Component {
                 startDate={Date.parse(searchFrom)}
                 endDate={Date.parse(searchTo)}
                 minDate={new Date()}
-                dateFormat="yyyy-MM-dd"
+                dateFormat="yy-MM-dd"
                 showClearButton={true}
             />
             <div className="input-group-append">
@@ -208,90 +227,133 @@ export default class TutorialsList extends Component {
           )}
         </div>
 
-        <div className="col-md-6">
+        <div className="col-md-8 mb-4">
           <h4>Inventory List</h4>
-          <ul className="list-group">
-            {inventories &&
-            inventories.map((inventory, index) => (
-                <li
-                  className={
-                    "list-group-item " +
-                    (index === currentIndex ? "active" : "")
-                  }
-                  onClick={() => this.setActiveInventory(inventory, index)}
-                  key={index}
-                >
-                  {inventory.id + " " + inventory.name + " " +inventory.type }
-                </li>
-              ))}
-          </ul>
-          <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllInventories}
-          >
-            Remove All
-          </button>
+          <table className="table table-fixed table-hover">
+            <thead>
+            <tr>
+              <th className="col-md-4">#</th>
+              <th className="col-md-4">Inventory Name</th>
+              <th className="col-md-4">Room Type</th>
+            </tr>
+            </thead>
+            <tbody>
+                {inventories &&
+                inventories.map((inventory, index) => (
+                    <tr
+                      className={
+                        (index === currentIndex ? "table-active" : "")
+                      }
+                      onClick={() => this.setActiveInventory(inventory, index)}
+                      key={index}
+                    >
+                        <th className="col-md-4">{index + 1}</th>
+                        <td className="col-md-4">{inventory.name}</td>
+                        <td className="col-md-4">{inventory.type}</td>
+                    </tr>
+                  ))}
+            </tbody>
+          </table>
         </div>
-        <div className="col-md-6">
+
+        <div className="col-md-4">
+          <h4>Inventory Details</h4>
           {currentInventory ? (
-            <div>
-              <h4>Inventory</h4>
-              <div>
-                <label>
-                  <strong>Id:</strong>
-                </label>{" "}
-                {currentInventory.id}
-              </div>
-              <div>
-                <label>
-                  <strong>Name:</strong>
-                </label>{" "}
-                {currentInventory.name}
-              </div>
-              <div>
-                <label>
-                  <strong>Type:</strong>
-                </label>{" "}
-                {currentInventory.type}
-              </div>
-              <div>
-                <label>
-                  <strong>Description:</strong>
-                </label>{" "}
-                {currentInventory.description}
-              </div>
-              <div>
-                <label>
-                  <strong>Available From:</strong>
-                </label>{" "}
-                {currentInventory.dtAvailableFrom}
-              </div>
-              <div>
-                <label>
-                  <strong>Available To:</strong>
-                </label>{" "}
-                {currentInventory.dtAvailableTo}
-              </div>
-              <div>
-                <label>
-                  <strong>Status:</strong>
-                </label>{" "}
-                {currentInventory.status}
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">
+                  <strong>
+                  {currentInventory.name}
+                  </strong>
+                </h5>
+                <div className="card-text">
+                  <div>
+                    <label>
+                      <strong>Type:</strong>
+                    </label>{" "}
+                    {currentInventory.type}
+                  </div>
+                  <div>
+                    <label>
+                      <strong>Description:</strong>
+                    </label>{" "}
+                    {currentInventory.description}
+                  </div>
+                  <div className="mb-2">
+                    <label>
+                      <strong>Available From:</strong>
+                    </label>{" "}
+                    <br/>
+                    {currentInventory.dtAvailableFrom}
+                  </div>
+                  <div className="mb-2">
+                    <label>
+                      <strong>Available To:</strong>
+                    </label>{" "}
+                    <br/>
+                    {currentInventory.dtAvailableTo}
+                  </div>
+                  <div className="mb-2"></div>
+
+                  <Link
+                    to={"/inventories/" + currentInventory.id}
+                    className="btn btn-success"
+                  >
+                    Edit
+                  </Link>
+                  <div className="mb-2"></div>
+
+                </div>
               </div>
 
-              <Link
-                to={"/inventories/" + currentInventory.id}
-                className="badge badge-warning"
-              >
-                Edit
-              </Link>
-            </div>
+              </div>
           ) : (
             <div>
               <br />
               <p>Please click on an Inventory...</p>
             </div>
           )}
+        </div>
+
+        <div className="col-md-12">
+          {
+            reservations.length !== 0 &&
+          (
+            <div>
+              <h4>Reservation List for "{currentInventory.name}"</h4>
+              <table className="table table-fixed table-hover">
+                <thead>
+                <tr>
+                  <th className="col-md-3">CheckIn</th>
+                  <th className="col-md-3">CheckOut</th>
+                  <th className="col-md-3">Guests</th>
+                  <th className="col-md-3">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {reservations &&
+                    reservations.map((reservations, index) => (
+                          <tr
+                            key={index}
+                          >
+                            <td className="col-md-3">{reservations.dtCheckIn}</td>
+                            <td className="col-md-3">{reservations.dtCheckOut}</td>
+                            <td className="col-md-3">{reservations.guests}</td>
+                            <td className="col-md-3">
+                              <Link
+                                  to={"/reservations/" + reservations.id}
+                                  className="btn btn-success"
+                              >
+                                Edit
+                              </Link>
+                            </td>
+                          </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )
+          }
         </div>
       </div>
     );
