@@ -81,7 +81,7 @@ export default class ReservationTimelinesComponent extends Component {
         let departures = 0;
         let guestsArrivals = 0;
         let guestsDeparture = 0;
-        const today = new Date();
+        const today = new Date("2021-07-09");
         today.setHours(0, 0, 0, 0);
 
         reservations.map(r => {
