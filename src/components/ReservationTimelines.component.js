@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import TutorialDataService from "../services/tutorial.service";
 import { Chart } from "react-google-charts";
+import { Person, BoxArrowInRight, BoxArrowLeft, BoxArrowRight } from "react-bootstrap-icons";
 
 const columns = [
     { type: "string", id: "InventoryName" },
@@ -17,12 +18,18 @@ export default class ReservationTimelinesComponent extends Component {
         this.setRowForInventory = this.setRowForInventory.bind(this);
         this.retrieveReservations = this.retrieveReservations.bind(this);
         this.retrieveInventories = this.retrieveInventories.bind(this);
+        this.setArrivalInfo = this.setArrivalInfo.bind(this);
 
         this.state = {
             inventories:[],
             reservations:[],
             rows: [],
-            columns:[]
+            columns:[],
+            arrivals: null,
+            departures: null,
+            guestsArrivals: null,
+            guestsDeparture: null,
+            size: 48
         };
     }
 
@@ -65,6 +72,38 @@ export default class ReservationTimelinesComponent extends Component {
         })
 
         this.setRowForInventory(this.state.inventories);
+        this.setArrivalInfo(this.state);
+    }
+
+    setArrivalInfo(state) {
+        const { reservations } = state;
+        let arrivals = 0;
+        let departures = 0;
+        let guestsArrivals = 0;
+        let guestsDeparture = 0;
+        const today = new Date("2021-07-09");
+        today.setHours(0, 0, 0, 0);
+
+        reservations.map(r => {
+            const checkIn = new Date(r.dtCheckIn);
+            checkIn.setHours(0, 0, 0, 0);
+            const checkOut = new Date(r.dtCheckOut);
+            checkOut.setHours(0, 0, 0, 0);
+            if (checkIn.valueOf() === today.valueOf()) {
+                arrivals++;
+                guestsArrivals += r.guests;
+            }
+            if (checkOut.valueOf() === today.valueOf()) {
+                departures++;
+                guestsDeparture += r.guests;
+            }
+        })
+        this.setState({
+            arrivals: arrivals,
+            departures: departures,
+            guestsDeparture: guestsDeparture,
+            guestsArrivals: guestsArrivals,
+        });
     }
 
     setRowForInventory(inventories){
@@ -104,17 +143,111 @@ export default class ReservationTimelinesComponent extends Component {
         const {columns, rows} = this.state;
 
         return (
-            <div className="col-md-12 mb-4">
-                <h4 className="d-flex justify-content-center">Reservation List</h4>
+            <div>
+                <div className="col-md-12 mb-5 mt-5">
+                    <div className="row">
+                        <div className="col-md-3">
+                            <div className="card border-secondary">
+                                <div className="card-body">
+                                    <div className="card-title">
+                                        <strong>
+                                            Arrivals
+                                        </strong>
+                                    </div>
+                                    <div className="card-text">
+                                        <div className="d-flex">
+                                            <h3 className="mr-auto p-2">
+                                                <BoxArrowInRight size={this.state.size}/>
+                                            </h3>
+                                            <h1 className="p-2">
+                                                <div>{this.state.arrivals}</div>
+                                            </h1>
+                                        </div>
+                                        arrivals today
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="card border-secondary">
+                                <div className="card-body">
+                                    <div className="card-title">
+                                        <strong>
+                                            Arrivals
+                                        </strong>
+                                    </div>
+                                    <div className="card-text">
+                                        <div className="d-flex">
+                                            <h3 className="mr-auto p-2">
+                                                <Person size={this.state.size} />
+                                            </h3>
+                                            <h1 className="p-2">
+                                                <div>{this.state.guestsArrivals}</div>
+                                            </h1>
+                                        </div>
+                                        guests today
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="card bg-light border-secondary">
+                                <div className="card-body">
+                                    <div className="card-title">
+                                        <strong>
+                                            Departure
+                                        </strong>
+                                    </div>
+                                    <div className="card-text">
+                                        <div className="d-flex">
+                                            <h3 className="mr-auto p-2">
+                                                <BoxArrowLeft size={this.state.size} />
+                                            </h3>
+                                            <h1 className="p-2">
+                                              <div>{this.state.departures}</div>  
+                                            </h1>
+                                        </div>
+                                        departures today
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="card bg-light border-secondary">
+                                <div className="card-body">
+                                    <div className="card-title">
+                                        <strong>
+                                            Departure
+                                        </strong>
+                                    </div>
+                                    <div className="card-text">
+                                        <div className="d-flex">
+                                            <h3 className="mr-auto p-2">
+                                                <Person size={this.state.size} />
+                                            </h3>
+                                            <h1 className="p-2">
+                                                <div>{this.state.guestsDeparture}</div>
+                                            </h1>
+                                        </div>
+                                        guests today
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="col-md-12 mb-4">
-                    <Chart
-                        width={'100%'}
-                        height={'800px'}
-                        chartType="Timeline"
-                        loader={<div>Loading Chart</div>}
-                        data={[columns, ...rows]}
-                        // rootProps={{ 'data-testid': '3' }}
-                    />
+                    <h4 className="d-flex justify-content-center">Reservation List</h4>
+                    <div className="col-md-12 mb-4">
+                        <Chart
+                            width={'100%'}
+                            height={'800px'}
+                            chartType="Timeline"
+                            loader={<div>Loading Chart</div>}
+                            data={[columns, ...rows]}
+                            // rootProps={{ 'data-testid': '3' }}
+                        />
+                    </div>
                 </div>
             </div>
         );

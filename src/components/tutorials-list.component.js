@@ -133,7 +133,7 @@ export default class TutorialsList extends Component {
     TutorialDataService.getAll()
         .then(response => {
           let inventories = response.data;
-          inventories = inventories.filter(inventories => inventories.name === name);
+          inventories = inventories.filter(inventories => inventories.name.includes(name));
           this.setState({
             inventories: inventories
           });
@@ -161,7 +161,7 @@ export default class TutorialsList extends Component {
               });
             }else{
               let inventories = response.data;
-              inventories = inventories.filter(inventories => inventories.name === this.state.searchName)
+              inventories = inventories.filter(inventories => inventories.name.includes(this.state.searchName))
               this.setState({
                 inventories: inventories
               })
