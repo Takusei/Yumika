@@ -5,18 +5,18 @@ import "./App.css";
 
 import ReservationTimelines from "./components/ReservationTimelines.component";
 
+
 class App extends Component {
   render() {
     return (
       <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <Link to={"/"} className="navbar-brand">
-            Yumika
+            The days with Yumika
           </Link>
           <div className="navbar-nav mr-auto">
             <li className="nav-item">
               <Link to={"/"} className="nav-link">
-                TBD
               </Link>
             </li>
           </div>

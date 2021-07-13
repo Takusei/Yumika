@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "./",
   "dependencies": {
+    "@scenejs/render": "^0.10.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -23,7 +24,10 @@
     "react-google-charts": "^3.0.15",
     "react-native-beautiful-timeline": "0.0.7",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.0"
+    "react-scenejs": "^1.1.0",
+    "react-scripts": "3.4.0",
+    "react-typing-animation": "^1.6.2",
+    "scenejs": "^1.5.0"
   },
   "scripts": {
     "start": "react-scripts start",
